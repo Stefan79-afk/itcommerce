@@ -49,10 +49,43 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException e) {
+        logger.error("MethodArgumentNotValidException occurred: {}", e.getMessage());
+
+        Throwable cause = e.getCause();
+
+        if (cause != null) {
+            logger.error("Caused by: {}", cause.getMessage(), cause);
+        }
+
         Map<String, String> errors = new HashMap<>();
         e.getBindingResult().getFieldErrors().forEach(error ->
             errors.put(error.getField(), error.getDefaultMessage())
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(UserLoginException.class)
+    public ResponseEntity<Map<String, String>> handleLoginException(UserLoginException e) {
+        logger.error("UserLoginException occurred: {}", e.getMessage());
+
+        Throwable cause = e.getCause();
+
+        if (cause != null) {
+            logger.error("Caused by: {}", cause.getMessage(), cause);
+        }
+        final Map<String, String > body = new HashMap<>();
+
+        if (cause instanceof IllegalArgumentException) {
+            body.put("error", "Email or password is incorrect");
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(body);
+        } else {
+            body.put("error", String.format("Unexpected error: %s", e.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(body);
+        }
+
     }
 }
