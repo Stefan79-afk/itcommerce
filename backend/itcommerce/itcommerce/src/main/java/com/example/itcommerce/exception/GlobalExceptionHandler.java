@@ -1,5 +1,6 @@
 package com.example.itcommerce.exception;
 
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -19,9 +20,9 @@ public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(UserRegistrationException.class)
-    public ResponseEntity<String> handleUserRegistrationException(UserRegistrationException e) {
+    public ResponseEntity<Map<String, String>> handleUserRegistrationException(UserRegistrationException e) {
         Throwable cause = e.getCause();
-
+        final Map<String, String> body = new HashMap<>();
         logger.error("UserRegistrationException occurred: {}", e.getMessage());
 
         if (cause != null) {
@@ -29,21 +30,20 @@ public class GlobalExceptionHandler {
         }
 
         if (cause instanceof DataIntegrityViolationException) {
+            body.put("error", "User with email already exists");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(String.format("Invalid registration data: %s", cause.getMessage()));
-        } else if (cause instanceof DataAccessResourceFailureException) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(String.format("Database error: %s", cause.getMessage()));
+                    .body(body);
         } else if (cause != null) {
+            body.put("error", cause.getMessage());
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(String.format("Error: %s", cause.getMessage()));
+                    .body(body);
         } else {
+            body.put("error", e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(String.format("Unexpected error: %s", e.getMessage()));
+                    .body(body);
         }
     }
 

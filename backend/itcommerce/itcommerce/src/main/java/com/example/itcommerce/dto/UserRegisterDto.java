@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class UserRegisterDto {
+    @Size(max = 255, message = "Name must not be longer than 255 characters")
     @NotBlank(message = "Name must not be empty")
     private String name;
 
@@ -14,6 +15,7 @@ public class UserRegisterDto {
     @NotBlank(message = "Password must not be empty")
     private String password;
 
+    @Size(max = 255, message = "Email must not be longer than 255 characters")
     @NotBlank(message = "Email must not be empty")
     @Email(message = "Email must be a valid format")
     private String email;
