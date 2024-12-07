@@ -2,19 +2,16 @@ package com.example.itcommerce.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 import lombok.Getter;
 
-@Getter
+@Data
 public class UserLoginDto {
     @NotBlank
     @Email
-    private final String email;
+    private String email;
 
     @NotBlank
-    private final String password;
+    private String password;
 
-    UserLoginDto(final String email, final String password) {
-        this.email = email;
-        this.password = password;
-    }
 }

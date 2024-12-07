@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    ResponseEntity<User> register(@Valid @RequestBody UserRegisterDto userRegisterDto) {
+    public ResponseEntity<User> register(@Valid @RequestBody UserRegisterDto userRegisterDto) {
         User user = this.userService.register(userRegisterDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<Map<String, String>> login(@Valid @RequestBody UserLoginDto userLoginDto) {
+    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody UserLoginDto userLoginDto) {
         String jwtToken = this.userService.login(userLoginDto);
         return ResponseEntity
                 .status(HttpStatus.OK)
