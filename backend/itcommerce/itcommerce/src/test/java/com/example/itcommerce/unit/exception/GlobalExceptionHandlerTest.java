@@ -32,8 +32,8 @@ class GlobalExceptionHandlerTest {
     private GlobalExceptionHandler globalExceptionHandler;
 
     @Test
-    @DisplayName("should get a bad request for UserRegistrationException")
-    void shouldGetABadRequestForUserRegistrationException() {
+    @DisplayName("should get a conflict for UserRegistrationException")
+    void shouldGetAConflictForUserRegistrationException() {
         DataIntegrityViolationException dataIntegrityViolationException = new DataIntegrityViolationException("DataIntegrityViolationException");
         UserRegistrationException userRegistrationException = new UserRegistrationException("UserRegistrationException", dataIntegrityViolationException);
         Map<String, String> expectedBody = new HashMap<>();
@@ -41,7 +41,7 @@ class GlobalExceptionHandlerTest {
 
         ResponseEntity<Map<String, String>> response = this.globalExceptionHandler.handleUserRegistrationException(userRegistrationException);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody()).isEqualTo(expectedBody);
     }
 

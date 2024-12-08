@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,7 +33,7 @@ public class GlobalExceptionHandler {
         if (cause instanceof DataIntegrityViolationException) {
             body.put("error", "User with email already exists");
             return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
+                    .status(HttpStatus.CONFLICT)
                     .body(body);
         } else if (cause != null) {
             body.put("error", cause.getMessage());
@@ -61,6 +62,21 @@ public class GlobalExceptionHandler {
         e.getBindingResult().getFieldErrors().forEach(error ->
             errors.put(error.getField(), error.getDefaultMessage())
         );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        logger.error("HttpMessageNotReadableException occurred {}", e.getMessage());
+
+        Throwable cause = e.getCause();
+
+        if (cause != null) {
+            logger.error("Caused by: {}", cause.getMessage(), cause);
+        }
+
+        Map<String, String> errors = Map.of("error", "Missing request body");
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
